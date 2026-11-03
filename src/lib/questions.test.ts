@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDoctorQuestions, clickRate, emptyAnswers, hasWarningSign, toggleSafety } from "./questions";
+import { buildDoctorQuestions, clickRate, emptyAnswers, hasWarningSign, NO_FOOD_YET, normalizeAnswers, suspectedFoodsText, SUSPECTED_FOODS, toggleFood } from "./questions";
 
 const base = { ...emptyAnswers, symptoms: ["Bloating"], frequency: "Daily", duration: "Under 3 months", mealPattern: "No pattern" };
 
