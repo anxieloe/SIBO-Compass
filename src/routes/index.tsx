@@ -1,24 +1,49 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { Shell } from "@/components/flow-ui";
+import { startSession, track } from "@/lib/flow";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "SIBO Compass — A symptom summary for your doctor" },
+      { name: "description", content: "Track your digestive symptoms and get a free one-page summary to bring to your doctor." },
+      { property: "og:title", content: "SIBO Compass — From always bloated to a plan" },
+      { property: "og:description", content: "A free one-page symptom summary to bring to your doctor. Not medical advice." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: Welcome,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Welcome() {
+  const navigate = useNavigate();
+  useEffect(() => track("welcome_view"), []);
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <Shell disclaimer={false}>
+      <div className="flex flex-1 flex-col justify-center py-10">
+        <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-lg bg-primary text-2xl text-primary-foreground" aria-hidden>
+          ✦
+        </div>
+        <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+          From always bloated to a plan.
+        </h1>
+        <p className="mt-4 text-lg text-muted-foreground">
+          Track your symptoms and get a one-page summary to bring to your doctor. Free.
+        </p>
+        <button
+          className="btn-primary mt-10"
+          onClick={() => {
+            startSession();
+            track("start_click");
+            navigate({ to: "/symptoms" });
+          }}
+        >
+          Start
+        </button>
+        <p className="mt-4 text-center text-sm text-muted-foreground">Early concept test. Not medical advice.</p>
+      </div>
+    </Shell>
   );
 }
