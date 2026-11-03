@@ -87,7 +87,7 @@ function SignIn() {
         <input id="admin-pw" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="min-h-12 rounded-lg border-[1.5px] border-input bg-card px-3" />
         <button className="btn-primary mt-2" disabled={busy}>{busy ? "Please wait…" : mode === "in" ? "Sign in" : "Create account"}</button>
       </form>
-      <button className="mt-4 w-full text-sm text-primary underline" onClick={() => setMode(mode === "in" ? "up" : "in")}>
+      <button className="btn-ghost mt-4 w-full border-[1.5px] border-primary text-base font-semibold text-primary" onClick={() => setMode(mode === "in" ? "up" : "in")}>
         {mode === "in" ? "First time? Create the admin account" : "Already have an account? Sign in"}
       </button>
     </Card>
