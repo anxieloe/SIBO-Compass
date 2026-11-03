@@ -31,7 +31,7 @@ function Tried() {
       <Group label="Already tried" hint="Choose all that apply.">
         <CheckList options={TRIED} value={a.tried} onToggle={onToggle} />
       </Group>
-      <Group label="Have you been diagnosed with SIBO?" hint="Optional.">
+      <Group label="Have you been diagnosed with SIBO?">
         <SingleList
           name="Have you been diagnosed with SIBO?"
           options={DIAGNOSIS}
@@ -41,7 +41,7 @@ function Tried() {
       </Group>
       <button
         className="btn-primary mt-auto"
-        disabled={a.tried.length === 0}
+        disabled={a.tried.length === 0 || !a.diagnosisStatus}
         onClick={() => {
           track("tried_done");
           void persistSession("tried");

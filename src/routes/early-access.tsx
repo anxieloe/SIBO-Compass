@@ -85,7 +85,7 @@ function EarlyAccess() {
         {consentError && <p className="mt-1 text-sm text-destructive">{consentError}</p>}
 
         <p className="mt-6 text-sm text-muted-foreground">
-          We only collect your email. Ask us to delete it any time at [TEAM EMAIL].
+          We only collect your email. Ask us to delete it any time at schule.angelina@web.de.
         </p>
         <button type="submit" className="btn-primary mt-auto pt-0" disabled={busy}>
           {busy ? "Joining…" : "Join early access"}
