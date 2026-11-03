@@ -28,7 +28,7 @@ function Meals() {
       </Group>
       <div className="mb-7">
         <label htmlFor="foods" className="mb-1 block text-lg font-semibold">
-          Foods you suspect <span className="text-sm font-normal text-muted-foreground">(optional)</span>
+          Foods you suspect
         </label>
         <textarea
           id="foods"
@@ -46,7 +46,7 @@ function Meals() {
       </div>
       <button
         className="btn-primary mt-auto"
-        disabled={!a.mealPattern}
+        disabled={!a.mealPattern || !a.suspectedFoods.trim()}
         onClick={() => {
           track("meals_done");
           void persistSession("meals");
