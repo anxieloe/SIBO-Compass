@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlertRouteImport } from './routes/alert'
+import { Route as EarlyAccessRouteImport } from './routes/early-access'
+import { Route as MealsRouteImport } from './routes/meals'
+import { Route as NextRouteImport } from './routes/next'
+import { Route as ResultsRouteImport } from './routes/results'
+import { Route as SafetyRouteImport } from './routes/safety'
+import { Route as SummaryRouteImport } from './routes/summary'
+import { Route as SymptomsRouteImport } from './routes/symptoms'
+import { Route as ThanksRouteImport } from './routes/thanks'
+import { Route as TriedRouteImport } from './routes/tried'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlertRoute = AlertRouteImport.update({
+  id: '/alert',
+  path: '/alert',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EarlyAccessRoute = EarlyAccessRouteImport.update({
+  id: '/early-access',
+  path: '/early-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MealsRoute = MealsRouteImport.update({
+  id: '/meals',
+  path: '/meals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NextRoute = NextRouteImport.update({
+  id: '/next',
+  path: '/next',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultsRoute = ResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyRoute = SafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SummaryRoute = SummaryRouteImport.update({
+  id: '/summary',
+  path: '/summary',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SymptomsRoute = SymptomsRouteImport.update({
+  id: '/symptoms',
+  path: '/symptoms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThanksRoute = ThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TriedRoute = TriedRouteImport.update({
+  id: '/tried',
+  path: '/tried',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alert': typeof AlertRoute
+  '/early-access': typeof EarlyAccessRoute
+  '/meals': typeof MealsRoute
+  '/next': typeof NextRoute
+  '/results': typeof ResultsRoute
+  '/safety': typeof SafetyRoute
+  '/summary': typeof SummaryRoute
+  '/symptoms': typeof SymptomsRoute
+  '/thanks': typeof ThanksRoute
+  '/tried': typeof TriedRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alert': typeof AlertRoute
+  '/early-access': typeof EarlyAccessRoute
+  '/meals': typeof MealsRoute
+  '/next': typeof NextRoute
+  '/results': typeof ResultsRoute
+  '/safety': typeof SafetyRoute
+  '/summary': typeof SummaryRoute
+  '/symptoms': typeof SymptomsRoute
+  '/thanks': typeof ThanksRoute
+  '/tried': typeof TriedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alert': typeof AlertRoute
+  '/early-access': typeof EarlyAccessRoute
+  '/meals': typeof MealsRoute
+  '/next': typeof NextRoute
+  '/results': typeof ResultsRoute
+  '/safety': typeof SafetyRoute
+  '/summary': typeof SummaryRoute
+  '/symptoms': typeof SymptomsRoute
+  '/thanks': typeof ThanksRoute
+  '/tried': typeof TriedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/alert'
+    | '/early-access'
+    | '/meals'
+    | '/next'
+    | '/results'
+    | '/safety'
+    | '/summary'
+    | '/symptoms'
+    | '/thanks'
+    | '/tried'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/alert'
+    | '/early-access'
+    | '/meals'
+    | '/next'
+    | '/results'
+    | '/safety'
+    | '/summary'
+    | '/symptoms'
+    | '/thanks'
+    | '/tried'
+  id:
+    | '__root__'
+    | '/'
+    | '/alert'
+    | '/early-access'
+    | '/meals'
+    | '/next'
+    | '/results'
+    | '/safety'
+    | '/summary'
+    | '/symptoms'
+    | '/thanks'
+    | '/tried'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlertRoute: typeof AlertRoute
+  EarlyAccessRoute: typeof EarlyAccessRoute
+  MealsRoute: typeof MealsRoute
+  NextRoute: typeof NextRoute
+  ResultsRoute: typeof ResultsRoute
+  SafetyRoute: typeof SafetyRoute
+  SummaryRoute: typeof SummaryRoute
+  SymptomsRoute: typeof SymptomsRoute
+  ThanksRoute: typeof ThanksRoute
+  TriedRoute: typeof TriedRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alert': {
+      id: '/alert'
+      path: '/alert'
+      fullPath: '/alert'
+      preLoaderRoute: typeof AlertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/early-access': {
+      id: '/early-access'
+      path: '/early-access'
+      fullPath: '/early-access'
+      preLoaderRoute: typeof EarlyAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meals': {
+      id: '/meals'
+      path: '/meals'
+      fullPath: '/meals'
+      preLoaderRoute: typeof MealsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/next': {
+      id: '/next'
+      path: '/next'
+      fullPath: '/next'
+      preLoaderRoute: typeof NextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/results': {
+      id: '/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof ResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety': {
+      id: '/safety'
+      path: '/safety'
+      fullPath: '/safety'
+      preLoaderRoute: typeof SafetyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/summary': {
+      id: '/summary'
+      path: '/summary'
+      fullPath: '/summary'
+      preLoaderRoute: typeof SummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/symptoms': {
+      id: '/symptoms'
+      path: '/symptoms'
+      fullPath: '/symptoms'
+      preLoaderRoute: typeof SymptomsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/thanks': {
+      id: '/thanks'
+      path: '/thanks'
+      fullPath: '/thanks'
+      preLoaderRoute: typeof ThanksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tried': {
+      id: '/tried'
+      path: '/tried'
+      fullPath: '/tried'
+      preLoaderRoute: typeof TriedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlertRoute: AlertRoute,
+  EarlyAccessRoute: EarlyAccessRoute,
+  MealsRoute: MealsRoute,
+  NextRoute: NextRoute,
+  ResultsRoute: ResultsRoute,
+  SafetyRoute: SafetyRoute,
+  SummaryRoute: SummaryRoute,
+  SymptomsRoute: SymptomsRoute,
+  ThanksRoute: ThanksRoute,
+  TriedRoute: TriedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
