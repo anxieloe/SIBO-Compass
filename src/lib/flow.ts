@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { emptyAnswers, hasWarningSign, type Answers } from "./questions";
+import { emptyAnswers, hasWarningSign, normalizeAnswers, suspectedFoodsText, type Answers } from "./questions";
 
 const KEY = "sibo-compass-v1";
 type State = { sessionId: string | null; answers: Answers; saveError?: boolean };
@@ -13,7 +13,10 @@ function load() {
   hydrated = true;
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) state = { ...state, ...JSON.parse(raw) };
+    if (raw) {
+      const parsed = JSON.parse(raw) as { answers?: Partial<Answers> | null };
+      state = { ...state, ...parsed, answers: normalizeAnswers(parsed?.answers) };
+    }
   } catch {}
   listeners.forEach((l) => l());
 }
@@ -81,7 +84,7 @@ export async function persistSession(step: string): Promise<boolean> {
       p_frequency: a.frequency ?? undefined,
       p_duration: a.duration ?? undefined,
       p_meal_pattern: a.mealPattern ?? undefined,
-      p_suspected_foods: a.suspectedFoods || undefined,
+      p_suspected_foods: suspectedFoodsText(a) || undefined,
       p_tried: a.tried,
       p_diagnosis_status: a.diagnosisStatus ?? undefined,
       p_alarm_triggered: hasWarningSign(a.safety),
