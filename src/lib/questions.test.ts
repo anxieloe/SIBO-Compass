@@ -34,6 +34,30 @@ describe("safety", () => {
   });
 });
 
+describe("suspected foods", () => {
+  it("lists more than the four named suspects", () => {
+    expect(SUSPECTED_FOODS.length).toBeGreaterThan(4);
+    for (const f of ["Garlic", "Onions", "Milk and other dairy (lactose)", "Gluten in general"]) {
+      expect(SUSPECTED_FOODS).toContain(f);
+    }
+  });
+  it("No specific food yet is exclusive with named foods", () => {
+    expect(toggleFood(["Garlic"], NO_FOOD_YET)).toEqual([NO_FOOD_YET]);
+    expect(toggleFood([NO_FOOD_YET], "Garlic")).toEqual(["Garlic"]);
+    expect(toggleFood(["Garlic", "Apples"], "Apples")).toEqual(["Garlic"]);
+  });
+  it("summary line keeps tapped foods first, then typed extras", () => {
+    expect(
+      suspectedFoodsText({ suspectedFoods: ["Garlic", "Onions"], suspectedFoodsExtra: ["Coffee"] }),
+    ).toBe("Garlic, Onions, Coffee");
+  });
+  it("older comma-string answers are read back as a list", () => {
+    const fixed = normalizeAnswers({ ...emptyAnswers, suspectedFoods: "onions, milk" as unknown as string[] });
+    expect(fixed.suspectedFoods).toEqual(["onions", "milk"]);
+    expect(fixed.suspectedFoodsExtra).toEqual([]);
+  });
+});
+
 it("click rate is clicks / next views", () => {
   expect(clickRate(1, 4)).toBe("25%");
   expect(clickRate(0, 0)).toBe("—");
