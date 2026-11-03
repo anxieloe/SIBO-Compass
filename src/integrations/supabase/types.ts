@@ -14,16 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      early_access: {
+        Row: {
+          consent: boolean
+          created_at: string
+          email: string
+          id: string
+          session_id: string | null
+        }
+        Insert: {
+          consent: boolean
+          created_at?: string
+          email: string
+          id?: string
+          session_id?: string | null
+        }
+        Update: {
+          consent?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          session_id?: string | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string
+          event_name: string
+          id: string
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          id?: string
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          id?: string
+          session_id?: string | null
+        }
+        Relationships: []
+      }
+      sessions: {
+        Row: {
+          alarm_triggered: boolean
+          created_at: string
+          diagnosis_status: string | null
+          duration: string | null
+          frequency: string | null
+          id: string
+          meal_pattern: string | null
+          reached_step: string | null
+          suspected_foods: string | null
+          symptoms: string[]
+          tried: string[]
+        }
+        Insert: {
+          alarm_triggered?: boolean
+          created_at?: string
+          diagnosis_status?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id: string
+          meal_pattern?: string | null
+          reached_step?: string | null
+          suspected_foods?: string | null
+          symptoms?: string[]
+          tried?: string[]
+        }
+        Update: {
+          alarm_triggered?: boolean
+          created_at?: string
+          diagnosis_status?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          meal_pattern?: string | null
+          reached_step?: string | null
+          suspected_foods?: string | null
+          symptoms?: string[]
+          tried?: string[]
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      save_session: {
+        Args: {
+          p_alarm_triggered: boolean
+          p_diagnosis_status: string
+          p_duration: string
+          p_frequency: string
+          p_id: string
+          p_meal_pattern: string
+          p_reached_step: string
+          p_suspected_foods: string
+          p_symptoms: string[]
+          p_tried: string[]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +275,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const
