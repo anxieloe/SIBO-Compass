@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useFlow } from "@/lib/flow";
 
 export const DISCLAIMER = "Not medical advice. This app does not diagnose.";
 
@@ -16,11 +17,12 @@ export function Shell({
   back?: string;
   disclaimer?: boolean;
 }) {
+  const { saveError } = useFlow();
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-5 pb-10 pt-5">
       <header className="no-print mb-6 flex items-center gap-3">
         {back ? (
-          <Link to={back} className="btn-ghost min-h-12 px-4 text-sm" aria-label="Back to previous step">
+          <Link to={back as "/"} className="btn-ghost min-h-12 px-4 text-sm" aria-label="Back to previous step">
             ← Back
           </Link>
         ) : (
@@ -44,6 +46,11 @@ export function Shell({
           </div>
         )}
       </header>
+      {saveError && step && (
+        <div className="no-print">
+          <Notice>We couldn't save your answers just now. You can keep going — your choices are kept on this device.</Notice>
+        </div>
+      )}
       <main className="flex flex-1 flex-col">{children}</main>
       {disclaimer && (
         <p className="no-print mt-8 text-center text-xs text-muted-foreground">{DISCLAIMER}</p>

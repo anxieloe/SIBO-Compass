@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { emptyAnswers, hasWarningSign, type Answers } from "./questions";
 
 const KEY = "sibo-compass-v1";
-type State = { sessionId: string | null; answers: Answers };
+type State = { sessionId: string | null; answers: Answers; saveError?: boolean };
 let state: State = { sessionId: null, answers: emptyAnswers };
 let hydrated = false;
 const listeners = new Set<() => void>();
@@ -88,9 +88,12 @@ export async function persistSession(step: string): Promise<boolean> {
       p_reached_step: step,
     } as never);
     if (error) throw error;
+    if (state.saveError) { state = { ...state, saveError: false }; save(); }
     return true;
   } catch (e) {
     console.warn("save failed", e);
+    state = { ...state, saveError: true };
+    save();
     return false;
   }
 }
