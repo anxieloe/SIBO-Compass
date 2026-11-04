@@ -4,6 +4,8 @@ import type { Session } from "@supabase/supabase-js";
 import { Card, Notice } from "@/components/flow-ui";
 import { supabase } from "@/integrations/supabase/client";
 import { clickRate } from "@/lib/questions";
+import { getSessionId } from "@/lib/flow";
+import { FUNNEL, cleanEvents, earlyAccessClicks, funnelCounts, uniqueSessions, type Ev } from "@/lib/funnel";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -94,20 +96,8 @@ function SignIn() {
   );
 }
 
-type Ev = { session_id: string | null; event_name: string };
-type EA = { id: string; email: string; created_at: string };
-
-const STEP_EVENTS: [string, string][] = [
-  ["Started", "start_click"],
-  ["Symptoms done", "symptoms_done"],
-  ["Meals done", "meals_done"],
-  ["Tried done", "tried_done"],
-  ["Safety done", "safety_done"],
-  ["Viewed summary", "summary_view"],
-  ["Printed summary", "summary_print_click"],
-  ["Viewed next steps", "next_view"],
-  ["Viewed early access", "early_access_view"],
-];
+type EA = { id: string; email: string; created_at: string; session_id: string | null };
+type S = { id: string; created_at: string; alarm_triggered: boolean; reached_step: string | null };
 
 async function fetchAll<T>(table: "events" | "sessions", cols: string): Promise<T[]> {
   const out: T[] = [];
@@ -121,11 +111,12 @@ async function fetchAll<T>(table: "events" | "sessions", cols: string): Promise<
 
 function Dashboard() {
   const [events, setEvents] = useState<Ev[] | null>(null);
-  const [sessionCount, setSessionCount] = useState(0);
-  const [alarmCount, setAlarmCount] = useState(0);
+  const [sessions, setSessions] = useState<S[]>([]);
+  const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const [emails, setEmails] = useState<EA[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [manualId, setManualId] = useState("");
 
   async function load() {
     setError(null);
@@ -135,17 +126,17 @@ function Dashboard() {
       const admin = (roles ?? []).some((r) => r.role === "admin");
       setIsAdmin(admin);
       if (!admin) return;
-      const [ev, sc, ac, ea] = await Promise.all([
+      const [ev, ss, ea, ex] = await Promise.all([
         fetchAll<Ev>("events", "session_id,event_name"),
-        supabase.from("sessions").select("id", { count: "exact", head: true }),
-        supabase.from("sessions").select("id", { count: "exact", head: true }).eq("alarm_triggered", true),
-        supabase.from("early_access").select("id,email,created_at").order("created_at", { ascending: false }),
+        fetchAll<S>("sessions", "id,created_at,alarm_triggered,reached_step"),
+        supabase.from("early_access").select("id,email,created_at,session_id").order("created_at", { ascending: false }),
+        supabase.from("excluded_sessions").select("session_id"),
       ]);
-      if (sc.error || ac.error || ea.error) throw sc.error || ac.error || ea.error;
+      if (ea.error || ex.error) throw ea.error || ex.error;
       setEvents(ev);
-      setSessionCount(sc.count ?? 0);
-      setAlarmCount(ac.count ?? 0);
+      setSessions(ss.sort((a, b) => b.created_at.localeCompare(a.created_at)));
       setEmails(ea.data ?? []);
+      setExcluded(new Set((ex.data ?? []).map((r) => r.session_id)));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load results.");
     }
@@ -154,14 +145,29 @@ function Dashboard() {
     void load();
   }, []);
 
+  async function setTest(id: string, test: boolean) {
+    const { error } = test
+      ? await supabase.from("excluded_sessions").upsert({ session_id: id })
+      : await supabase.from("excluded_sessions").delete().eq("session_id", id);
+    if (error) return alert("Couldn't update: " + error.message);
+    setExcluded((prev) => {
+      const n = new Set(prev);
+      if (test) n.add(id);
+      else n.delete(id);
+      return n;
+    });
+  }
+
   if (isAdmin === false) return <Notice>This account doesn't have admin access.</Notice>;
   if (error) return <Notice>Couldn't load results: {error}</Notice>;
   if (!events) return <p className="text-muted-foreground">Loading results…</p>;
 
-  const uniq = (name: string) => new Set(events.filter((e) => e.event_name === name).map((e) => e.session_id ?? "anon")).size;
-  const total = (name: string) => events.filter((e) => e.event_name === name).length;
-  const nextViews = total("next_view");
-  const eaClicks = total("early_access_click");
+  const ev = cleanEvents(events, excluded);
+  const real = sessions.filter((s) => !excluded.has(s.id));
+  const funnel = funnelCounts(ev);
+  const { clicks, views } = earlyAccessClicks(ev);
+  const realEmails = emails.filter((e) => !e.session_id || !excluded.has(e.session_id));
+  const thisDevice = getSessionId();
 
   async function remove(id: string) {
     if (!confirm("Delete this email?")) return;
@@ -178,7 +184,7 @@ function Dashboard() {
         const s = Array.isArray(v) ? v.join("; ") : v == null ? "" : String(v);
         return `"${s.replace(/"/g, '""')}"`;
       };
-      const csv = [cols.join(","), ...rows.map((r) => cols.map((c) => esc(r[c])).join(","))].join("\n");
+      const csv = [[...cols, "is_test"].join(","), ...rows.map((r) => [...cols.map((c) => esc(r[c])), esc(excluded.has(String(r.id)))].join(","))].join("\n");
       const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
       const a = document.createElement("a");
       a.href = url;
@@ -191,16 +197,19 @@ function Dashboard() {
   }
 
   const stats: [string, string | number][] = [
-    ["Sessions", sessionCount],
-    ["Alert triggered", alarmCount],
-    ["Viewed /next", nextViews],
-    ["Early access clicks", eaClicks],
-    ["Emails submitted", total("early_access_submit")],
-    ["Early-access click rate", clickRate(eaClicks, nextViews)],
+    ["Sessions", real.length],
+    ["Alert triggered", real.filter((s) => s.alarm_triggered).length],
+    ["Viewed next steps", views],
+    ["Clicked early access", clicks],
+    ["Submitted email", uniqueSessions(ev, "early_access_submit").size],
+    ["Early-access click rate", clickRate(clicks, views)],
   ];
 
   return (
     <div className="flex flex-col gap-6">
+      <p className="text-sm text-muted-foreground">
+        All numbers count unique people (sessions), not clicks. {excluded.size} test session{excluded.size === 1 ? "" : "s"} excluded.
+      </p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {stats.map(([l, v]) => (
           <Card key={l}>
@@ -211,20 +220,64 @@ function Dashboard() {
       </div>
 
       <Card>
-        <h2 className="mb-3 text-lg font-semibold">Sessions reaching each step</h2>
+        <h2 className="mb-3 text-lg font-semibold">People reaching each step</h2>
         <ul>
-          {STEP_EVENTS.map(([label, ev]) => (
-            <li key={ev} className="flex justify-between border-b py-2 last:border-0">
+          {FUNNEL.map(([label, name], i) => (
+            <li key={name} className="flex justify-between border-b py-2 last:border-0">
               <span>{label}</span>
-              <span className="font-semibold">{uniq(ev)}</span>
+              <span className="font-semibold">{funnel[i]}</span>
             </li>
           ))}
+          <li className="flex justify-between py-2 text-sm text-muted-foreground">
+            <span>Printed summary (optional action)</span>
+            <span>{uniqueSessions(ev, "summary_print_click").size}</span>
+          </li>
         </ul>
       </Card>
 
       <Card>
+        <h2 className="mb-1 text-lg font-semibold">Test sessions</h2>
+        <p className="mb-3 text-sm text-muted-foreground">Marked sessions are left out of every number above.</p>
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+          {thisDevice && (
+            <button className="btn-ghost border-[1.5px] border-primary text-sm text-primary" onClick={() => setTest(thisDevice, !excluded.has(thisDevice))}>
+              {excluded.has(thisDevice) ? "Un-mark this device's session" : "Mark this device's session as test"}
+            </button>
+          )}
+          <input value={manualId} onChange={(e) => setManualId(e.target.value)} placeholder="Paste a session ID" aria-label="Session ID" className="min-h-12 flex-1 rounded-lg border-[1.5px] border-input bg-card px-3 text-sm" />
+          <button className="btn-ghost text-sm" disabled={!/^[0-9a-f-]{36}$/i.test(manualId.trim())} onClick={() => { void setTest(manualId.trim(), true); setManualId(""); }}>
+            Mark as test
+          </button>
+        </div>
+        <div className="max-h-96 overflow-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b text-muted-foreground">
+                <th className="py-2">Started</th>
+                <th className="py-2">Last step</th>
+                <th className="py-2">Session</th>
+                <th className="py-2 text-right">Test?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sessions.map((s) => (
+                <tr key={s.id} className={`border-b last:border-0 ${excluded.has(s.id) ? "text-muted-foreground line-through" : ""}`}>
+                  <td className="py-2 pr-3">{new Date(s.created_at).toLocaleString()}</td>
+                  <td className="py-2 pr-3">{s.reached_step ?? "—"}</td>
+                  <td className="py-2 pr-3 font-mono text-xs">{s.id.slice(0, 8)}{s.id === thisDevice ? " (this device)" : ""}</td>
+                  <td className="py-2 text-right">
+                    <input type="checkbox" className="h-5 w-5" checked={excluded.has(s.id)} onChange={(e) => setTest(s.id, e.target.checked)} aria-label={`Mark session ${s.id.slice(0, 8)} as test`} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <Card>
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Early-access emails</h2>
+          <h2 className="text-lg font-semibold">Early-access emails ({realEmails.length})</h2>
           <button className="btn-ghost text-sm" onClick={exportCsv}>Export sessions CSV</button>
         </div>
         {emails.length === 0 ? (
@@ -242,7 +295,7 @@ function Dashboard() {
               <tbody>
                 {emails.map((r) => (
                   <tr key={r.id} className="border-b last:border-0">
-                    <td className="py-2 pr-3">{r.email}</td>
+                    <td className="py-2 pr-3">{r.email}{r.session_id && excluded.has(r.session_id) ? " (test)" : ""}</td>
                     <td className="py-2 pr-3">{new Date(r.created_at).toLocaleDateString()}</td>
                     <td className="py-2 text-right">
                       <button className="min-h-12 px-3 text-destructive underline" onClick={() => remove(r.id)} aria-label={`Delete ${r.email}`}>
