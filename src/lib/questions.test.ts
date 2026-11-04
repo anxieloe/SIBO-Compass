@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDoctorQuestions, clickRate, emptyAnswers, hasWarningSign, toggleSafety } from "./questions";
+import { buildDoctorQuestions, clickRate, emptyAnswers, hasWarningSign, NO_FOOD_YET, normalizeAnswers, suspectedFoodsText, SUSPECTED_FOODS, toggleFood, toggleSafety } from "./questions";
 
 const base = { ...emptyAnswers, symptoms: ["Bloating"], frequency: "Daily", duration: "Under 3 months", mealPattern: "No pattern" };
 
@@ -31,6 +31,30 @@ describe("safety", () => {
   it("warning sign triggers alert", () => {
     expect(hasWarningSign(["None of these"])).toBe(false);
     expect(hasWarningSign(["Trouble swallowing"])).toBe(true);
+  });
+});
+
+describe("suspected foods", () => {
+  it("lists more than the four named suspects", () => {
+    expect(SUSPECTED_FOODS.length).toBeGreaterThan(4);
+    for (const f of ["Garlic", "Onions", "Milk and other dairy (lactose)", "Gluten in general"]) {
+      expect(SUSPECTED_FOODS).toContain(f);
+    }
+  });
+  it("No specific food yet is exclusive with named foods", () => {
+    expect(toggleFood(["Garlic"], NO_FOOD_YET)).toEqual([NO_FOOD_YET]);
+    expect(toggleFood([NO_FOOD_YET], "Garlic")).toEqual(["Garlic"]);
+    expect(toggleFood(["Garlic", "Apples"], "Apples")).toEqual(["Garlic"]);
+  });
+  it("summary line keeps tapped foods first, then typed extras", () => {
+    expect(
+      suspectedFoodsText({ suspectedFoods: ["Garlic", "Onions"], suspectedFoodsExtra: ["Coffee"] }),
+    ).toBe("Garlic, Onions, Coffee");
+  });
+  it("older comma-string answers are read back as a list", () => {
+    const fixed = normalizeAnswers({ ...emptyAnswers, suspectedFoods: "onions, milk" as unknown as string[] });
+    expect(fixed.suspectedFoods).toEqual(["onions", "milk"]);
+    expect(fixed.suspectedFoodsExtra).toEqual([]);
   });
 });
 

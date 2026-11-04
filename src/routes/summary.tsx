@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Card, DISCLAIMER, Shell } from "@/components/flow-ui";
 import { track, useFlow } from "@/lib/flow";
-import { buildDoctorQuestions, hasWarningSign } from "@/lib/questions";
+import { buildDoctorQuestions, hasWarningSign, suspectedFoodsText } from "@/lib/questions";
 
 export const Route = createFileRoute("/summary")({
   head: () => ({
@@ -62,7 +62,7 @@ function Summary() {
           <Row label="How often" value={a.frequency ?? ""} />
           <Row label="How long" value={a.duration ?? ""} />
           <Row label="Symptoms after meals" value={a.mealPattern ?? ""} />
-          <Row label="Suspected foods" value={a.suspectedFoods} />
+          <Row label="Suspected foods" value={suspectedFoodsText(a)} />
           <Row label="Already tried" value={a.tried.join(", ")} />
           {a.diagnosisStatus && <Row label="Previously diagnosed with SIBO" value={a.diagnosisStatus} />}
         </dl>
