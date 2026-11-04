@@ -10,7 +10,7 @@ describe("funnel", () => {
   it("later steps never exceed earlier ones", () => {
     const c = funnelCounts([ev("a", "start_click"), ev("b", "next_view"), ev("b", "next_view")]);
     expect(c[0]).toBe(2);
-    for (let i = 1; i < c.length; i++) expect(c[i]).toBeLessThanOrEqual(c[i - 1]);
+    for (let i = 1; i < c.length; i++) expect(c[i]).toBeLessThanOrEqual(c[i - 1]!);
   });
   it("click rate uses unique clickers over unique next viewers", () => {
     const r = earlyAccessClicks([

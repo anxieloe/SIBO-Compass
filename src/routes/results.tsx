@@ -184,7 +184,7 @@ function Dashboard() {
         const s = Array.isArray(v) ? v.join("; ") : v == null ? "" : String(v);
         return `"${s.replace(/"/g, '""')}"`;
       };
-      const csv = [[...cols, "is_test"].join(","), ...rows.map((r) => [...cols.map((c) => esc(r[c])), esc(excluded.has(String(r.id)))].join(","))].join("\n");
+      const csv = [[...cols, "is_test"].join(","), ...rows.map((r) => [...cols.map((c) => esc(r[c])), esc(excluded.has(String(r["id"])))].join(","))].join("\n");
       const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
       const a = document.createElement("a");
       a.href = url;
