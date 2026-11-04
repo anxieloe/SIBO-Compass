@@ -59,6 +59,24 @@ export type Database = {
         }
         Relationships: []
       }
+      excluded_sessions: {
+        Row: {
+          created_at: string
+          note: string | null
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          note?: string | null
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          note?: string | null
+          session_id?: string
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           alarm_triggered: boolean
