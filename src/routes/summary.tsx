@@ -88,7 +88,6 @@ function Summary() {
         >
           Print or save as PDF
         </button>
-        <Link to="/next" className="btn-primary text-lg shadow-lg">What can I do next? →</Link>
         <p className="mt-4 text-center text-xs text-muted-foreground">{DISCLAIMER}</p>
       </div>
     </Shell>
