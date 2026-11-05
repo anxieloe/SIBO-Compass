@@ -24,7 +24,8 @@ function Thanks() {
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft text-3xl text-primary" aria-hidden>
           ✓
         </div>
-        <h1 className="text-3xl font-bold">Thanks, you are on the list.</h1>
+        <h1 className="text-3xl font-bold">You're on the list.</h1>
+        <p className="mt-3 text-lg">We'll email you when it's ready.</p>
         <p className="mt-4 text-muted-foreground">
           This is an early concept test. Nothing was ordered and no medical advice was given.
         </p>

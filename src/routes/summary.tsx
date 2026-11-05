@@ -78,6 +78,7 @@ function Summary() {
         <p className="mt-6 border-t pt-4 text-xs text-muted-foreground">Not medical advice and not a diagnosis.</p>
       </Card>
       <div className="no-print mt-6 flex flex-col gap-3">
+        <Link to="/next" className="btn-primary text-lg shadow-lg">What can I do next? →</Link>
         <button
           className="btn-ghost w-full"
           onClick={() => {
@@ -87,7 +88,7 @@ function Summary() {
         >
           Print or save as PDF
         </button>
-        <Link to="/next" className="btn-primary">What can I do next?</Link>
+        <Link to="/next" className="btn-primary text-lg shadow-lg">What can I do next? →</Link>
         <p className="mt-4 text-center text-xs text-muted-foreground">{DISCLAIMER}</p>
       </div>
     </Shell>
