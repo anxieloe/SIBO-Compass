@@ -32,6 +32,9 @@ function Welcome() {
         <p className="mt-4 text-lg text-muted-foreground">
           Track your symptoms and get a one-page summary to bring to your doctor. Free.
         </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          SIBO means small intestinal bacterial overgrowth, a possible cause of bloating.
+        </p>
         <button
           className="btn-primary mt-10"
           onClick={() => {

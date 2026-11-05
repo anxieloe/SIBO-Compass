@@ -54,7 +54,10 @@ function EarlyAccess() {
   return (
     <Shell back="/next">
       <h1 className="mb-2 text-2xl font-bold">Get early access</h1>
-      <p className="mb-6 text-muted-foreground">We'll let you know when SIBO Compass is ready.</p>
+      <p className="mb-2 text-muted-foreground">We'll let you know when SIBO Compass is ready.</p>
+      <p className="mb-6 text-sm text-muted-foreground">
+        Early access means joining a waiting list. You will not be charged.
+      </p>
       {failed && <Notice>Sorry, we couldn't save your email. Please try again in a moment.</Notice>}
       <form onSubmit={submit} noValidate className="flex flex-1 flex-col">
         <label htmlFor="email" className="mb-2 font-semibold">Email</label>

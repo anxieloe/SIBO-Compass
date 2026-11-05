@@ -57,6 +57,7 @@ function Summary() {
       <Card className="print-card">
         <p className="text-sm text-muted-foreground">{date}</p>
         <h1 className="mt-1 text-2xl font-bold">Your summary for your doctor</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Bring this to your appointment to help describe your symptoms.</p>
         <dl className="mt-4">
           <Row label="Symptoms" value={a.symptoms.join(", ")} />
           <Row label="How often" value={a.frequency ?? ""} />
@@ -66,12 +67,14 @@ function Summary() {
           <Row label="Already tried" value={a.tried.join(", ")} />
           {a.diagnosisStatus && <Row label="Previously diagnosed with SIBO" value={a.diagnosisStatus} />}
         </dl>
-        <h2 className="mt-6 text-lg font-semibold">Questions to ask your doctor</h2>
-        <ol className="mt-2 list-decimal space-y-2 pl-5">
-          {buildDoctorQuestions(a).map((q) => (
-            <li key={q}>{q}</li>
-          ))}
-        </ol>
+        <section aria-labelledby="doctor-questions" className="mt-6 border-l-4 border-primary bg-primary-soft p-4">
+          <h2 id="doctor-questions" className="text-lg font-bold text-primary">Questions to ask your doctor</h2>
+          <ol className="mt-3 list-decimal space-y-3 pl-5">
+            {buildDoctorQuestions(a).map((q) => (
+              <li key={q}>{q}</li>
+            ))}
+          </ol>
+        </section>
         <p className="mt-6 border-t pt-4 text-xs text-muted-foreground">Not medical advice and not a diagnosis.</p>
       </Card>
       <div className="no-print mt-6 flex flex-col gap-3">
