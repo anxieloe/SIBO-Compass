@@ -37,7 +37,10 @@ function Next() {
 
   return (
     <Shell back="/summary">
-      <h1 className="mb-6 text-2xl font-bold">Possible next steps</h1>
+      <h1 className="mb-2 text-2xl font-bold">Possible next steps</h1>
+      <p className="mb-6 text-sm text-muted-foreground">
+        SIBO means small intestinal bacterial overgrowth, a possible cause of bloating.
+      </p>
       <ol className="mb-8">
         {STEPS.map((s, i) => (
           <li key={s} className="relative flex gap-4 pb-6 last:pb-0">
@@ -49,6 +52,9 @@ function Next() {
           </li>
         ))}
       </ol>
+      <p className="mb-6 text-sm text-muted-foreground">
+        The 12-week program includes a diet plan, food reintroduction, and check-ins.
+      </p>
       <Card className="mb-4">
         <div className="flex items-baseline justify-between gap-4 border-b pb-3">
           <span>Test and clinician review</span>

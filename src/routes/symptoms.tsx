@@ -23,6 +23,9 @@ function Symptoms() {
   const ready = a.symptoms.length > 0 && a.frequency && a.duration;
   return (
     <Shell step={1} back="/">
+      <p className="mb-4 text-sm text-muted-foreground">
+        These 4 short steps take about 3 minutes and build a one-page summary you can bring to your doctor.
+      </p>
       <h1 className="mb-6 text-2xl font-bold">What are you dealing with?</h1>
       <Group label="Symptoms" hint="Choose all that apply.">
         <MultiChips options={SYMPTOMS} value={a.symptoms} onToggle={(o) => setAnswers({ symptoms: toggle(a.symptoms, o) })} />

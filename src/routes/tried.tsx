@@ -27,7 +27,7 @@ function Tried() {
   };
   return (
     <Shell step={3} back="/meals">
-      <h1 className="mb-6 text-2xl font-bold">What have you already tried?</h1>
+      <h1 className="mb-6 text-2xl font-bold">Have you tried anything to address these symptoms? If so, what?</h1>
       <Group label="Already tried" hint="Choose all that apply.">
         <CheckList options={TRIED} value={a.tried} onToggle={onToggle} />
       </Group>
