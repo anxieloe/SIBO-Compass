@@ -77,6 +77,48 @@ export type Database = {
         }
         Relationships: []
       }
+      practitioners: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          kind: string
+          location: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          published: boolean
+          telehealth: boolean
+          website: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          kind?: string
+          location?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          published?: boolean
+          telehealth?: boolean
+          website?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          kind?: string
+          location?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          published?: boolean
+          telehealth?: boolean
+          website?: string | null
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           alarm_triggered: boolean

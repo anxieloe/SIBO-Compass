@@ -1,3 +1,4 @@
+import { PractitionerAdmin } from "@/components/practitioner-admin";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -234,6 +235,8 @@ function Dashboard() {
           </li>
         </ul>
       </Card>
+
+      <PractitionerAdmin />
 
       <Card>
         <h2 className="mb-1 text-lg font-semibold">Test sessions</h2>

@@ -1,3 +1,4 @@
+import { ResourceLinks } from "@/components/resource-links";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Shell } from "@/components/flow-ui";
 import { resetFlow } from "@/lib/flow";
@@ -38,6 +39,7 @@ function Thanks() {
         >
           Back to start
         </button>
+        <ResourceLinks />
       </div>
     </Shell>
   );

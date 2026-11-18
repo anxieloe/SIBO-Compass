@@ -1,3 +1,4 @@
+import { ResourceLinks } from "@/components/resource-links";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Card, Shell } from "@/components/flow-ui";
@@ -76,6 +77,7 @@ function Next() {
       >
         Get early access
       </Link>
+      <ResourceLinks />
     </Shell>
   );
 }

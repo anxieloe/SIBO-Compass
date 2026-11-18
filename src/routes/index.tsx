@@ -1,3 +1,4 @@
+import { ResourceLinks } from "@/components/resource-links";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Shell } from "@/components/flow-ui";
@@ -46,6 +47,7 @@ function Welcome() {
           Start
         </button>
         <p className="mt-4 text-center text-sm text-muted-foreground">Early concept test. Not medical advice.</p>
+        <ResourceLinks />
       </div>
     </Shell>
   );

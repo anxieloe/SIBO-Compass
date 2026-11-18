@@ -14,9 +14,12 @@ import { Route as AlertRouteImport } from './routes/alert'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as MealsRouteImport } from './routes/meals'
 import { Route as NextRouteImport } from './routes/next'
+import { Route as PractitionersRouteImport } from './routes/practitioners'
+import { Route as RecipesRouteImport } from './routes/recipes'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as SummaryRouteImport } from './routes/summary'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as SymptomsRouteImport } from './routes/symptoms'
 import { Route as ThanksRouteImport } from './routes/thanks'
 import { Route as TriedRouteImport } from './routes/tried'
@@ -46,6 +49,16 @@ const NextRoute = NextRouteImport.update({
   path: '/next',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PractitionersRoute = PractitionersRouteImport.update({
+  id: '/practitioners',
+  path: '/practitioners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesRoute = RecipesRouteImport.update({
+  id: '/recipes',
+  path: '/recipes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResultsRoute = ResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -59,6 +72,11 @@ const SafetyRoute = SafetyRouteImport.update({
 const SummaryRoute = SummaryRouteImport.update({
   id: '/summary',
   path: '/summary',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SymptomsRoute = SymptomsRouteImport.update({
@@ -83,9 +101,12 @@ export interface FileRoutesByFullPath {
   '/early-access': typeof EarlyAccessRoute
   '/meals': typeof MealsRoute
   '/next': typeof NextRoute
+  '/practitioners': typeof PractitionersRoute
+  '/recipes': typeof RecipesRoute
   '/results': typeof ResultsRoute
   '/safety': typeof SafetyRoute
   '/summary': typeof SummaryRoute
+  '/support': typeof SupportRoute
   '/symptoms': typeof SymptomsRoute
   '/thanks': typeof ThanksRoute
   '/tried': typeof TriedRoute
@@ -96,9 +117,12 @@ export interface FileRoutesByTo {
   '/early-access': typeof EarlyAccessRoute
   '/meals': typeof MealsRoute
   '/next': typeof NextRoute
+  '/practitioners': typeof PractitionersRoute
+  '/recipes': typeof RecipesRoute
   '/results': typeof ResultsRoute
   '/safety': typeof SafetyRoute
   '/summary': typeof SummaryRoute
+  '/support': typeof SupportRoute
   '/symptoms': typeof SymptomsRoute
   '/thanks': typeof ThanksRoute
   '/tried': typeof TriedRoute
@@ -110,9 +134,12 @@ export interface FileRoutesById {
   '/early-access': typeof EarlyAccessRoute
   '/meals': typeof MealsRoute
   '/next': typeof NextRoute
+  '/practitioners': typeof PractitionersRoute
+  '/recipes': typeof RecipesRoute
   '/results': typeof ResultsRoute
   '/safety': typeof SafetyRoute
   '/summary': typeof SummaryRoute
+  '/support': typeof SupportRoute
   '/symptoms': typeof SymptomsRoute
   '/thanks': typeof ThanksRoute
   '/tried': typeof TriedRoute
@@ -125,9 +152,12 @@ export interface FileRouteTypes {
     | '/early-access'
     | '/meals'
     | '/next'
+    | '/practitioners'
+    | '/recipes'
     | '/results'
     | '/safety'
     | '/summary'
+    | '/support'
     | '/symptoms'
     | '/thanks'
     | '/tried'
@@ -138,9 +168,12 @@ export interface FileRouteTypes {
     | '/early-access'
     | '/meals'
     | '/next'
+    | '/practitioners'
+    | '/recipes'
     | '/results'
     | '/safety'
     | '/summary'
+    | '/support'
     | '/symptoms'
     | '/thanks'
     | '/tried'
@@ -151,9 +184,12 @@ export interface FileRouteTypes {
     | '/early-access'
     | '/meals'
     | '/next'
+    | '/practitioners'
+    | '/recipes'
     | '/results'
     | '/safety'
     | '/summary'
+    | '/support'
     | '/symptoms'
     | '/thanks'
     | '/tried'
@@ -165,9 +201,12 @@ export interface RootRouteChildren {
   EarlyAccessRoute: typeof EarlyAccessRoute
   MealsRoute: typeof MealsRoute
   NextRoute: typeof NextRoute
+  PractitionersRoute: typeof PractitionersRoute
+  RecipesRoute: typeof RecipesRoute
   ResultsRoute: typeof ResultsRoute
   SafetyRoute: typeof SafetyRoute
   SummaryRoute: typeof SummaryRoute
+  SupportRoute: typeof SupportRoute
   SymptomsRoute: typeof SymptomsRoute
   ThanksRoute: typeof ThanksRoute
   TriedRoute: typeof TriedRoute
@@ -210,6 +249,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NextRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/practitioners': {
+      id: '/practitioners'
+      path: '/practitioners'
+      fullPath: '/practitioners'
+      preLoaderRoute: typeof PractitionersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes': {
+      id: '/recipes'
+      path: '/recipes'
+      fullPath: '/recipes'
+      preLoaderRoute: typeof RecipesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/results': {
       id: '/results'
       path: '/results'
@@ -229,6 +282,13 @@ declare module '@tanstack/react-router' {
       path: '/summary'
       fullPath: '/summary'
       preLoaderRoute: typeof SummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/symptoms': {
@@ -261,9 +321,12 @@ const rootRouteChildren: RootRouteChildren = {
   EarlyAccessRoute: EarlyAccessRoute,
   MealsRoute: MealsRoute,
   NextRoute: NextRoute,
+  PractitionersRoute: PractitionersRoute,
+  RecipesRoute: RecipesRoute,
   ResultsRoute: ResultsRoute,
   SafetyRoute: SafetyRoute,
   SummaryRoute: SummaryRoute,
+  SupportRoute: SupportRoute,
   SymptomsRoute: SymptomsRoute,
   ThanksRoute: ThanksRoute,
   TriedRoute: TriedRoute,
