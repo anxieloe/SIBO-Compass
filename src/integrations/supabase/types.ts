@@ -40,21 +40,27 @@ export type Database = {
       }
       events: {
         Row: {
+          channel: string | null
           created_at: string
           event_name: string
           id: string
+          price_arm: string | null
           session_id: string | null
         }
         Insert: {
+          channel?: string | null
           created_at?: string
           event_name: string
           id?: string
+          price_arm?: string | null
           session_id?: string | null
         }
         Update: {
+          channel?: string | null
           created_at?: string
           event_name?: string
           id?: string
+          price_arm?: string | null
           session_id?: string | null
         }
         Relationships: []
@@ -119,15 +125,44 @@ export type Database = {
         }
         Relationships: []
       }
+      reservation_followup: {
+        Row: {
+          call_email: string | null
+          call_opt_in: boolean | null
+          created_at: string
+          fair_price: string | null
+          id: string
+          session_id: string | null
+        }
+        Insert: {
+          call_email?: string | null
+          call_opt_in?: boolean | null
+          created_at?: string
+          fair_price?: string | null
+          id?: string
+          session_id?: string | null
+        }
+        Update: {
+          call_email?: string | null
+          call_opt_in?: boolean | null
+          created_at?: string
+          fair_price?: string | null
+          id?: string
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           alarm_triggered: boolean
+          channel: string | null
           created_at: string
           diagnosis_status: string | null
           duration: string | null
           frequency: string | null
           id: string
           meal_pattern: string | null
+          price_arm: string | null
           reached_step: string | null
           suspected_foods: string | null
           symptoms: string[]
@@ -135,12 +170,14 @@ export type Database = {
         }
         Insert: {
           alarm_triggered?: boolean
+          channel?: string | null
           created_at?: string
           diagnosis_status?: string | null
           duration?: string | null
           frequency?: string | null
           id: string
           meal_pattern?: string | null
+          price_arm?: string | null
           reached_step?: string | null
           suspected_foods?: string | null
           symptoms?: string[]
@@ -148,12 +185,14 @@ export type Database = {
         }
         Update: {
           alarm_triggered?: boolean
+          channel?: string | null
           created_at?: string
           diagnosis_status?: string | null
           duration?: string | null
           frequency?: string | null
           id?: string
           meal_pattern?: string | null
+          price_arm?: string | null
           reached_step?: string | null
           suspected_foods?: string | null
           symptoms?: string[]
@@ -204,6 +243,10 @@ export type Database = {
           p_symptoms: string[]
           p_tried: string[]
         }
+        Returns: undefined
+      }
+      set_session_meta: {
+        Args: { p_channel: string; p_id: string; p_price_arm: string }
         Returns: undefined
       }
     }

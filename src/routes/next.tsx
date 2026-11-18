@@ -1,8 +1,8 @@
 import { ResourceLinks } from "@/components/resource-links";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, Shell } from "@/components/flow-ui";
-import { track, useFlow } from "@/lib/flow";
+import { ensurePriceArm, track, useFlow } from "@/lib/flow";
 import { hasWarningSign } from "@/lib/questions";
 
 export const Route = createFileRoute("/next")({
@@ -30,11 +30,17 @@ function Next() {
   const { answers } = useFlow();
   const navigate = useNavigate();
   const alarm = hasWarningSign(answers.safety);
+  const [arm, setArm] = useState<"A" | "B" | null>(null);
   useEffect(() => {
-    if (alarm) navigate({ to: "/alert", replace: true });
-    else track("next_view");
+    if (alarm) {
+      navigate({ to: "/alert", replace: true });
+      return;
+    }
+    setArm(ensurePriceArm());
+    track("next_view");
+    track("pricing_view");
   }, [alarm, navigate]);
-  if (alarm) return null;
+  if (alarm || !arm) return null;
 
   return (
     <Shell back="/summary">
@@ -59,7 +65,7 @@ function Next() {
       <Card className="mb-4">
         <div className="flex items-baseline justify-between gap-4 border-b pb-3">
           <span>Test and clinician review</span>
-          <span className="font-semibold">about $199</span>
+          <span className="font-semibold">{arm === "B" ? "about $99" : "about $199"}</span>
         </div>
         <div className="flex items-baseline justify-between gap-4 pt-3">
           <span>12-week program</span>
@@ -70,12 +76,19 @@ function Next() {
         This is an outline. Nothing can be ordered in this early test. A result that is not positive means SIBO was not
         found on this test, not that your symptoms have no cause.
       </p>
+      <p className="mb-4 text-sm">
+        This service is not available yet. Reserving costs nothing, you will not be charged, and you can cancel any
+        time by emailing schule.angelina@web.de.
+      </p>
       <Link
         to="/early-access"
         className="btn-primary mt-auto"
-        onClick={() => track("early_access_click")}
+        onClick={() => {
+          track("early_access_click");
+          track("reserve_click");
+        }}
       >
-        Get early access
+        Reserve my spot (no charge)
       </Link>
       <ResourceLinks />
     </Shell>

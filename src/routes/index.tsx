@@ -1,6 +1,6 @@
 import { ResourceLinks } from "@/components/resource-links";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Shell } from "@/components/flow-ui";
 import { startSession, track } from "@/lib/flow";
 
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/")({
 
 function Welcome() {
   const navigate = useNavigate();
+  const [adult, setAdult] = useState(false);
   useEffect(() => track("welcome_view"), []);
   return (
     <Shell disclaimer={false}>
@@ -36,8 +37,19 @@ function Welcome() {
         <p className="mt-3 text-sm text-muted-foreground">
           SIBO means small intestinal bacterial overgrowth, a possible cause of bloating.
         </p>
+        <label className="mt-8 flex min-h-12 cursor-pointer items-center gap-3">
+          <input
+            type="checkbox"
+            checked={adult}
+            onChange={(e) => setAdult(e.target.checked)}
+            className="h-6 w-6 shrink-0 accent-primary"
+            required
+          />
+          <span>I am 18 or older</span>
+        </label>
         <button
-          className="btn-primary mt-10"
+          className="btn-primary mt-4"
+          disabled={!adult}
           onClick={() => {
             startSession();
             track("start_click");

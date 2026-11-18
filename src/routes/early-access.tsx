@@ -8,9 +8,9 @@ import { EMAIL_RE } from "@/lib/questions";
 export const Route = createFileRoute("/early-access")({
   head: () => ({
     meta: [
-      { title: "Get early access — SIBO Compass" },
+      { title: "Reserve my spot — SIBO Compass" },
       { name: "description", content: "Join the early access list. We only collect your email." },
-      { property: "og:title", content: "Get early access — SIBO Compass" },
+      { property: "og:title", content: "Reserve my spot — SIBO Compass" },
       { property: "og:description", content: "Join the SIBO Compass early access list." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -48,12 +48,13 @@ function EarlyAccess() {
       return;
     }
     track("early_access_submit");
-    navigate({ to: "/thanks" });
+    track("reserve_submit");
+    navigate({ to: "/feedback" });
   }
 
   return (
     <Shell back="/next">
-      <h1 className="mb-2 text-2xl font-bold">Get early access</h1>
+      <h1 className="mb-2 text-2xl font-bold">Reserve my spot</h1>
       <p className="mb-2 text-muted-foreground">We'll let you know when SIBO Compass is ready.</p>
       <p className="mb-6 text-sm text-muted-foreground">
         Early access means joining a waiting list. You will not be charged.
@@ -83,7 +84,7 @@ function EarlyAccess() {
             aria-invalid={!!consentError}
             required
           />
-          <span>I agree to be contacted about early access</span>
+          <span>I agree to be contacted when this is available</span>
         </label>
         {consentError && <p className="mt-1 text-sm text-destructive">{consentError}</p>}
 
@@ -91,7 +92,7 @@ function EarlyAccess() {
           We only collect your email. Ask us to delete it any time at schule.angelina@web.de.
         </p>
         <button type="submit" className="btn-primary mt-auto pt-0" disabled={busy}>
-          {busy ? "Joining…" : "Join early access"}
+          {busy ? "Reserving…" : "Reserve my spot"}
         </button>
       </form>
     </Shell>

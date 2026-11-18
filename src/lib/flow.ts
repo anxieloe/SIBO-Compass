@@ -50,6 +50,7 @@ export function setAnswers(patch: Partial<Answers>) {
 export function startSession() {
   state = { sessionId: crypto.randomUUID(), answers: emptyAnswers };
   save();
+  syncMeta();
   return state.sessionId!;
 }
 
@@ -63,12 +64,51 @@ export function getSessionId() {
   return state.sessionId;
 }
 
+/* ---- Price experiment meta (kept across restarts so a person always sees the same arm) ---- */
+const META_KEY = "sibo-compass-meta";
+type Meta = { priceArm?: "A" | "B"; channel?: string };
+function readMeta(): Meta {
+  if (typeof window === "undefined") return {};
+  try { return JSON.parse(localStorage.getItem(META_KEY) || "{}") as Meta; } catch { return {}; }
+}
+function writeMeta(m: Meta) {
+  try { localStorage.setItem(META_KEY, JSON.stringify(m)); } catch {}
+}
+function syncMeta() {
+  const sid = getSessionId();
+  if (!sid) return;
+  const m = readMeta();
+  supabase
+    .rpc("set_session_meta", { p_id: sid, p_price_arm: m.priceArm ?? null, p_channel: m.channel ?? "direct" } as never)
+    .then(({ error }) => error && console.warn("meta save failed", error.message));
+}
+/** Reads ?src= on the first page load only; later loads keep the first channel. */
+export function initChannel(search: string) {
+  const m = readMeta();
+  if (m.channel) return;
+  const src = new URLSearchParams(search).get("src")?.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 40);
+  writeMeta({ ...m, channel: src || "direct" });
+}
+export function getChannel() {
+  return readMeta().channel ?? "direct";
+}
+/** Assigns A/B 50/50 the first time, then always returns the same arm. */
+export function ensurePriceArm(): "A" | "B" {
+  const m = readMeta();
+  if (m.priceArm) return m.priceArm;
+  const arm = Math.random() < 0.5 ? "A" : "B";
+  writeMeta({ ...m, priceArm: arm });
+  syncMeta();
+  return arm;
+}
+
 /** Fire-and-forget event logging; never throws. */
 export function track(event: string) {
   const sid = getSessionId();
+  const m = readMeta();
   supabase
     .from("events")
-    .insert({ event_name: event, session_id: sid })
+    .insert({ event_name: event, session_id: sid, price_arm: m.priceArm ?? null, channel: m.channel ?? "direct" })
     .then(({ error }) => error && console.warn("track failed", error.message));
 }
 
