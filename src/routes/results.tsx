@@ -6,7 +6,7 @@ import { Card, Notice } from "@/components/flow-ui";
 import { supabase } from "@/integrations/supabase/client";
 import { clickRate } from "@/lib/questions";
 import { getSessionId } from "@/lib/flow";
-import { FUNNEL, cleanEvents, earlyAccessClicks, funnelCounts, uniqueSessions, type Ev } from "@/lib/funnel";
+import { FUNNEL, OTHER_BEHAVIOR, priceExperiment, cleanEvents, earlyAccessClicks, funnelCounts, uniqueSessions, type Ev } from "@/lib/funnel";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -128,7 +128,7 @@ function Dashboard() {
       setIsAdmin(admin);
       if (!admin) return;
       const [ev, ss, ea, ex] = await Promise.all([
-        fetchAll<Ev>("events", "session_id,event_name"),
+        fetchAll<Ev>("events", "session_id,event_name,price_arm,channel"),
         fetchAll<S>("sessions", "id,created_at,alarm_triggered,reached_step"),
         supabase.from("early_access").select("id,email,created_at,session_id").order("created_at", { ascending: false }),
         supabase.from("excluded_sessions").select("session_id"),
@@ -169,6 +169,18 @@ function Dashboard() {
   const { clicks, views } = earlyAccessClicks(ev);
   const realEmails = emails.filter((e) => !e.session_id || !excluded.has(e.session_id));
   const thisDevice = getSessionId();
+  const price = priceExperiment(ev);
+
+  function exportPriceCsv() {
+    const head = ["arm", "channel", "viewed_next", "clicked_reserve", "submitted_reservation", "answered_fair_price", "opted_in_call", "reservation_rate"];
+    const csv = [head.join(","), ...price.map((r) => [r.arm, r.channel, r.viewed, r.clicked, r.submitted, r.fairPrice, r.callOptIn, r.rate].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))].join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sibo-price-experiment-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   async function remove(id: string) {
     if (!confirm("Delete this email?")) return;
@@ -233,6 +245,50 @@ function Dashboard() {
             <span>Printed summary (optional action)</span>
             <span>{uniqueSessions(ev, "summary_print_click").size}</span>
           </li>
+        </ul>
+      </Card>
+
+      <Card>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">Price experiment</h2>
+          <button className="btn-ghost text-sm" onClick={exportPriceCsv}>Export CSV</button>
+        </div>
+        <p className="mb-3 text-sm text-muted-foreground">A = about $199, B = about $99. Reservation rate = reservations ÷ people who viewed next steps.</p>
+        {price.length === 0 ? (
+          <p className="text-muted-foreground">No one has seen the prices yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b text-muted-foreground">
+                  <th className="py-2 pr-2">Arm</th><th className="py-2 pr-2">Channel</th><th className="py-2 pr-2">Viewed</th>
+                  <th className="py-2 pr-2">Clicked reserve</th><th className="py-2 pr-2">Reserved</th><th className="py-2 pr-2">Fair price</th>
+                  <th className="py-2 pr-2">Call yes</th><th className="py-2">Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {price.map((r) => (
+                  <tr key={r.arm + r.channel} className="border-b last:border-0">
+                    <td className="py-2 pr-2 font-semibold">{r.arm}</td><td className="py-2 pr-2">{r.channel}</td><td className="py-2 pr-2">{r.viewed}</td>
+                    <td className="py-2 pr-2">{r.clicked}</td><td className="py-2 pr-2">{r.submitted}</td><td className="py-2 pr-2">{r.fairPrice}</td>
+                    <td className="py-2 pr-2">{r.callOptIn}</td><td className="py-2 font-semibold">{r.rate}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <h2 className="mb-3 text-lg font-semibold">Other behavior</h2>
+        <ul>
+          {OTHER_BEHAVIOR.map(([label, name]) => (
+            <li key={name} className="flex justify-between border-b py-2 last:border-0">
+              <span>{label}</span>
+              <span className="font-semibold">{uniqueSessions(ev, name).size}</span>
+            </li>
+          ))}
         </ul>
       </Card>
 

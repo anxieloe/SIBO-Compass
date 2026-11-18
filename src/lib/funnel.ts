@@ -1,4 +1,4 @@
-export type Ev = { session_id: string | null; event_name: string };
+export type Ev = { session_id: string | null; event_name: string; price_arm?: string | null; channel?: string | null };
 
 /** Linear funnel order. A session counts at a step if it reached that step or any later one. */
 export const FUNNEL: [string, string][] = [
@@ -39,3 +39,50 @@ export function earlyAccessClicks(events: Ev[]): { clicks: number; views: number
   const clicked = uniqueSessions(events, "early_access_click");
   return { clicks: [...clicked].filter((s) => viewed.has(s)).length, views: viewed.size };
 }
+
+export type PriceRow = {
+  arm: "A" | "B";
+  channel: string;
+  viewed: number;
+  clicked: number;
+  submitted: number;
+  fairPrice: number;
+  callOptIn: number;
+  rate: string;
+};
+
+/** Per arm and channel, unique people at each experiment step. Arm/channel come from the person's own events. */
+export function priceExperiment(events: Ev[]): PriceRow[] {
+  const person = new Map<string, { arm?: "A" | "B"; channel?: string; did: Set<string> }>();
+  for (const e of events) {
+    if (!e.session_id) continue;
+    const p = person.get(e.session_id) ?? { did: new Set<string>() };
+    if (!p.arm && (e.price_arm === "A" || e.price_arm === "B")) p.arm = e.price_arm;
+    if (!p.channel && e.channel) p.channel = e.channel;
+    p.did.add(e.event_name);
+    person.set(e.session_id, p);
+  }
+  const rows = new Map<string, PriceRow>();
+  for (const p of person.values()) {
+    if (!p.arm) continue;
+    const channel = p.channel ?? "direct";
+    const key = `${p.arm}|${channel}`;
+    const r = rows.get(key) ?? { arm: p.arm, channel, viewed: 0, clicked: 0, submitted: 0, fairPrice: 0, callOptIn: 0, rate: "" };
+    if (p.did.has("pricing_view")) r.viewed++;
+    if (p.did.has("reserve_click")) r.clicked++;
+    if (p.did.has("reserve_submit")) r.submitted++;
+    if (p.did.has("fair_price_answered")) r.fairPrice++;
+    if (p.did.has("call_opt_in")) r.callOptIn++;
+    rows.set(key, r);
+  }
+  return [...rows.values()]
+    .map((r) => ({ ...r, rate: r.viewed ? `${Math.round((r.submitted / r.viewed) * 1000) / 10}%` : "—" }))
+    .sort((a, b) => a.arm.localeCompare(b.arm) || a.channel.localeCompare(b.channel));
+}
+
+export const OTHER_BEHAVIOR: [string, string][] = [
+  ["Viewed recipes", "recipe_view"],
+  ["Clicked a support group", "support_group_click"],
+  ["Started a booking", "booking_start"],
+  ["Sent a booking request (preview)", "booking_request"],
+];

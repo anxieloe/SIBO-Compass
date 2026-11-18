@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlertRouteImport } from './routes/alert'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
+import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as MealsRouteImport } from './routes/meals'
 import { Route as NextRouteImport } from './routes/next'
 import { Route as PractitionersRouteImport } from './routes/practitioners'
@@ -37,6 +38,11 @@ const AlertRoute = AlertRouteImport.update({
 const EarlyAccessRoute = EarlyAccessRouteImport.update({
   id: '/early-access',
   path: '/early-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedbackRoute = FeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MealsRoute = MealsRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alert': typeof AlertRoute
   '/early-access': typeof EarlyAccessRoute
+  '/feedback': typeof FeedbackRoute
   '/meals': typeof MealsRoute
   '/next': typeof NextRoute
   '/practitioners': typeof PractitionersRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alert': typeof AlertRoute
   '/early-access': typeof EarlyAccessRoute
+  '/feedback': typeof FeedbackRoute
   '/meals': typeof MealsRoute
   '/next': typeof NextRoute
   '/practitioners': typeof PractitionersRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/alert': typeof AlertRoute
   '/early-access': typeof EarlyAccessRoute
+  '/feedback': typeof FeedbackRoute
   '/meals': typeof MealsRoute
   '/next': typeof NextRoute
   '/practitioners': typeof PractitionersRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alert'
     | '/early-access'
+    | '/feedback'
     | '/meals'
     | '/next'
     | '/practitioners'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alert'
     | '/early-access'
+    | '/feedback'
     | '/meals'
     | '/next'
     | '/practitioners'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/'
     | '/alert'
     | '/early-access'
+    | '/feedback'
     | '/meals'
     | '/next'
     | '/practitioners'
@@ -199,6 +211,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertRoute: typeof AlertRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
+  FeedbackRoute: typeof FeedbackRoute
   MealsRoute: typeof MealsRoute
   NextRoute: typeof NextRoute
   PractitionersRoute: typeof PractitionersRoute
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/early-access'
       fullPath: '/early-access'
       preLoaderRoute: typeof EarlyAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feedback': {
+      id: '/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof FeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/meals': {
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertRoute: AlertRoute,
   EarlyAccessRoute: EarlyAccessRoute,
+  FeedbackRoute: FeedbackRoute,
   MealsRoute: MealsRoute,
   NextRoute: NextRoute,
   PractitionersRoute: PractitionersRoute,

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Card, Notice, Shell } from "@/components/flow-ui";
 import { supabase } from "@/integrations/supabase/client";
+import { track } from "@/lib/flow";
 
 export const Route = createFileRoute("/practitioners")({
   head: () => ({
@@ -49,9 +50,52 @@ function Practitioners() {
               {p.email && <a className="text-primary underline" href={`mailto:${p.email}`}>{p.email}</a>}
               {p.phone && <a className="text-primary underline" href={`tel:${p.phone}`}>{p.phone}</a>}
             </div>
+            <Booking name={p.name} />
           </Card>
         ))}
       </div>
     </Shell>
+  );
+}
+
+/** Demo only: shows what would be shared, but never sends or saves anything. */
+function Booking({ name }: { name: string }) {
+  const [open, setOpen] = useState(false);
+  const [agree, setAgree] = useState(false);
+  const [withSummary, setWithSummary] = useState(false);
+  const [sent, setSent] = useState(false);
+  if (!open)
+    return (
+      <button className="btn-ghost mt-4 w-full" onClick={() => { setOpen(true); track("booking_start"); }}>
+        Request a booking
+      </button>
+    );
+  return (
+    <div className="mt-4 rounded-md bg-muted p-4 text-sm">
+      <p className="mb-3 font-semibold">Booking isn't available yet. This is a preview.</p>
+      <p className="mb-2">If you send a request, this is exactly what {name} would receive:</p>
+      <ul className="mb-3 list-disc pl-5">
+        <li>Your name or first name</li>
+        <li>Your email</li>
+        <li>Your preferred time</li>
+        {withSummary && <li>Your symptom summary</li>}
+      </ul>
+      <label className="mb-2 flex min-h-12 cursor-pointer items-start gap-3">
+        <input type="checkbox" checked={withSummary} onChange={(e) => setWithSummary(e.target.checked)} className="mt-0.5 h-6 w-6 shrink-0 accent-primary" />
+        <span>Also share my symptom summary (optional)</span>
+      </label>
+      <label className="mb-3 flex min-h-12 cursor-pointer items-start gap-3">
+        <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 h-6 w-6 shrink-0 accent-primary" required />
+        <span>I agree to share this with {name}</span>
+      </label>
+      <p className="mb-3 text-muted-foreground">Practitioners are independent. We don't provide medical care.</p>
+      {sent ? (
+        <p className="font-semibold">Nothing was sent or saved. Booking isn't available yet. This is a preview.</p>
+      ) : (
+        <button className="btn-primary w-full" disabled={!agree} onClick={() => { setSent(true); track("booking_request"); }}>
+          Send request
+        </button>
+      )}
+    </div>
   );
 }
